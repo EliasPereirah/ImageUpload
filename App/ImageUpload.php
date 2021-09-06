@@ -87,7 +87,7 @@ class ImageUpload{
 
     private function isMimeValid(){
         $validsMimes = ['image/webp','image/webp','image/gif','image/jpeg','image/png','image/gif'];
-        $mime = $this->globalFile['type'];
+        $mime = mime_content_type($this->globalFile['tmp_name']);
         if(array_search($mime, $validsMimes) !== false){
             return true;
         }
