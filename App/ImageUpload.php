@@ -107,7 +107,6 @@ class ImageUpload{
     }
 
     private function realDoUpload($filename, $destination){
-       // exit($destination);
         if(move_uploaded_file($filename, $destination)){
             $this->hasUploaded = true;
             return true;
