@@ -1,2 +1,2 @@
 # ImageUpload
-PHP Class do do upload of imagens
+PHP class for uploading images
