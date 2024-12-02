@@ -1,14 +1,13 @@
 <?php
 namespace App;
 use Cocur\Slugify\Slugify;
-
 class ImageUpload{
-    public $errors = [];
-    private $globalFile;
-    private $hasUploaded = false;
-    private $maxFileNameLength = 100;
-    public function doUpload($globalFile, $uploadTo, $maxKilobytes = 2000){
-         $this->globalFile = $globalFile;
+    public array $errors = [];
+    private array $globalFile;
+    private bool $hasUploaded = false;
+    private int $maxFileNameLength = 100;
+    public function doUpload($globalFile, $uploadTo, $maxKilobytes = 2000):void{
+        $this->globalFile = $globalFile;
         $pn = pathinfo($globalFile['name'], PATHINFO_FILENAME);
         if(strlen($pn) == 0){
             // ex: .png or just png instead of: name.png
@@ -23,7 +22,7 @@ class ImageUpload{
                                 $destination = "{$uploadTo}/{$fileName}";
                                 $this->realDoUpload($globalFile['tmp_name'], $destination);
                             }else{
-                                $this->errors[] = "<b>Para o admin:</b> O diretório informado não é válido!";
+                                $this->errors[] = "<b>Para o admin:</b> O diretório informado é inválido!";
                             }
                         }
                     }
@@ -35,7 +34,7 @@ class ImageUpload{
 
     }
 
-    private function hasError(){
+    private function hasError():bool{
         if($this->globalFile['error']){
             $this->errors[] = "Ops... houve um erro, tente novamente!";
             return true;
@@ -44,7 +43,7 @@ class ImageUpload{
     }
 
 
-    private function getGoodFileName($uploadTo){
+    private function getGoodFileName(string $uploadTo):string{
 
         $fileLength = strlen($this->globalFile['name']);
         if($fileLength > $this->maxFileNameLength){
@@ -76,7 +75,7 @@ class ImageUpload{
         }
     }
 
-    private function isFileTooHeavy(int $maxKB){
+    private function isFileTooHeavy(int $maxKB):bool{
         $size =  $this->globalFile['size'] / 1024;
         if($size > $maxKB){
             $this->errors[] = "O arquivo não pode ter mais que {$maxKB}KB!";
@@ -85,28 +84,28 @@ class ImageUpload{
         return false;
     }
 
-    private function isMimeValid(){
-        $validsMimes = ['image/webp','image/webp','image/gif','image/jpeg','image/png','image/gif'];
+    private function isMimeValid():bool{
+        $validMimes = ['image/webp','image/webp','image/gif','image/jpeg','image/png','image/gif'];
         $mime = mime_content_type($this->globalFile['tmp_name']);
-        if(array_search($mime, $validsMimes) !== false){
+        if(in_array($mime, $validMimes)){
             return true;
         }
         $this->errors[] = "Arquivos ".htmlentities($mime)." não é válido!";
         return false;
     }
 
-    private function isExtensionValid(){
+    private function isExtensionValid():bool{
         $extension = pathinfo($this->globalFile['name'], PATHINFO_EXTENSION);
         $extension = strtolower($extension);
-        $validsExtension = ['webp', 'webp', 'gif', 'jpeg', 'jpg', 'png','gif'];
-        if(array_search($extension, $validsExtension) !== false){
+        $validExtension = ['webp', 'webp', 'gif', 'jpeg', 'jpg', 'png','gif'];
+        if(in_array($extension, $validExtension)){
             return true;
         }
         $this->errors[] = "O formato ".htmlentities($extension)." não é valido!";
         return false;
     }
 
-    private function realDoUpload($filename, $destination){
+    private function realDoUpload(string $filename, string $destination):bool{
         if(move_uploaded_file($filename, $destination)){
             $this->hasUploaded = true;
             return true;
@@ -127,7 +126,7 @@ class ImageUpload{
         }
     }
 
-    private function isImage(){
+    private function isImage():bool{
         $filename = $this->globalFile['tmp_name'];
         $type = @exif_imagetype($filename);
 
